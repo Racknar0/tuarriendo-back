@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int       @id @default(autoincrement())
+  email                String    @unique
+  password             String
+  name                 String
+  lastName             String?
+  phoneNumber          String    @unique
+  address              String
+  profilePicture       String?
+  location             String?
+  language             String    @default("es") // campo para el idioma del usuario
+  verificationStatus   Boolean   @default(false)
+  verificationToken    String? // campo para el token de verificación
+  tokenExpiration      DateTime? // campo para la expiración del token
+  lastLogin            DateTime? // campo para la última vez que se logueó
+  resetToken           String? // campo para el token de reseteo de contraseña
+  resetTokenExpiration DateTime? // campo para la expiración del token de reseteo
+  jwtVersion           Int       @default(1) // campo para la versión del token
+  lastPasswordChange   DateTime?
+  isActive             Boolean   @default(false)
+
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
